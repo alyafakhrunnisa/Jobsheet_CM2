@@ -7,11 +7,11 @@ public class Pembeli02 {
     Pembeli02 prev;
     Pembeli02 next;
  
-    Pembeli02(int noAntrian, String b, String c) {
+    public Pembeli02(int noAntrian, String namaPembeli, String noHp) {
         this.noAntrian = noAntrian;
-        this.namaPembeli = b;
-        this.noHp = c;
+        this.namaPembeli = namaPembeli;
+        this.noHp = noHp;
         this.prev = null;
         this.next = null;
-    }  
+    }
 }
