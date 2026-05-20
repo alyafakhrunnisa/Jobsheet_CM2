@@ -3,7 +3,7 @@ package Pertemuan13;
 public class DLLAntrian02 {
     Pembeli02 head;
     Pembeli02 tail;
-    int counterAntrian;
+    int counterAntrian; //buat menghitung nomor antrian secara otomatis
 
     DLLAntrian02() {
         head = null;
@@ -11,6 +11,7 @@ public class DLLAntrian02 {
         counterAntrian = 0;
     }
 
+    // L4 — Kompleksitas: O(1) — langsung tambah di tail
     void tambahAntrianAwal(String nama, String noHp) {
         counterAntrian++;
         Pembeli02 baru = new Pembeli02(counterAntrian, nama, noHp);
@@ -23,6 +24,7 @@ public class DLLAntrian02 {
         }
     }
 
+    // L4 — Kompleksitas: O(1) — langsung tambah di tail
     void tambahAntrian(String nama, String noHp) {
         counterAntrian++;
         Pembeli02 baru = new Pembeli02(counterAntrian, nama, noHp);
@@ -52,6 +54,7 @@ public class DLLAntrian02 {
         }
     }
 
+    // L4 — Kompleksitas: O(n) — harus cari dulu secara linear
     public Pembeli02 hapusAntrian(int noAntrian) {
         Pembeli02 curr = head;
         while (curr != null) {
@@ -76,15 +79,86 @@ public class DLLAntrian02 {
         return head == null;
     }
 
+    // public Pembeli02 hapusAntrianDepan() {
+    //     if (head == null)
+    //         return null;
+    //     Pembeli02 hapus = head;
+    //     head = head.next;
+    //     if (head != null)
+    //         head.prev = null;
+    //     else
+    //         tail = null;
+    //     return hapus;
+    // }
+
+    // L4 — Kompleksitas: O(1) — langsung hapus head, tanpa loop
     public Pembeli02 hapusAntrianDepan() {
-        if (head == null)
-            return null;
+        // Kasus 1: antrian kosong
+        if (head == null) return null;
+ 
         Pembeli02 hapus = head;
         head = head.next;
-        if (head != null)
+ 
+        // Kasus 2: hanya 1 node
+        if (head == tail) {
+            head = tail = null;
+        } else {
+            // Kasus 3: lebih dari 1 node
+            head = head.next;
             head.prev = null;
-        else
-            tail = null;
+        }
+ 
         return hapus;
     }
+
+    // L4 — Kompleksitas: O(n) — dalam kasus terburuk cek semua node
+    public void cariPembeli(String nama) {
+        Pembeli02 curr = head;
+        boolean ditemukan = false;
+        while (curr != null) {
+            if (curr.namaPembeli.equalsIgnoreCase(nama)) {
+                if (!ditemukan) {
+                    System.out.println("[Sequential Search] Pembeli ditemukan:");
+                    ditemukan = true;
+                }
+                System.out.printf("No Antrian: %d | Nama: %s | No HP: %s%n",
+                        curr.noAntrian, curr.namaPembeli, curr.noHp);
+            }
+            curr = curr.next;
+        }
+        if (!ditemukan) System.out.println("Pembeli tidak ditemukan.");
+    }
+
+    // Kompleksitas: O(n^2) — dua loop bersarang (outer + inner geser)
+    public void sortAntrian() {
+        if (head == null || head.next == null) return;
+ 
+        Pembeli02 curr = head.next;
+        while (curr != null) {
+            // Simpan data "key" dari posisi curr
+            int keyNoAntrian = curr.noAntrian;
+            String keyNama   = curr.namaPembeli;
+            String keyNoHp   = curr.noHp;
+ 
+            // runner bergerak mundur (ke kiri / prev) selama nama > key
+            Pembeli02 runner = curr.prev;
+            while (runner != null
+                    && runner.namaPembeli.compareToIgnoreCase(keyNama) > 0) {
+                // Geser data runner ke posisi runner.next
+                runner.next.noAntrian  = runner.noAntrian;
+                runner.next.namaPembeli = runner.namaPembeli;
+                runner.next.noHp       = runner.noHp;
+                runner = runner.prev;
+            }
+            // Letakkan key di posisi yang tepat
+            Pembeli02 tempat = (runner == null) ? head : runner.next;
+            tempat.noAntrian  = keyNoAntrian;
+            tempat.namaPembeli = keyNama;
+            tempat.noHp       = keyNoHp;
+ 
+            curr = curr.next;
+        }
+        System.out.println("Antrian berhasil diurutkan berdasarkan nama (ascending).");
+    }
+
 }
